@@ -1,0 +1,80 @@
+@page "/contactDelete/{id:int}"
+
+@using Contacts.Client.Services
+@using Contacts.Shared
+
+@inject IContactService ContactService
+@inject NavigationManager NavigationManager
+
+@if (contact is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+<RadzenTemplateForm Data="@contact">
+    <div class="card">
+        <div class="card-body">
+            <div class="container">
+                <RadzenFieldset Text="Contact Details">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="">First Name</label>
+                            <RadzenTextBox class="form-control" @bind-Value="contact.FirstName" Disabled="true"></RadzenTextBox>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="">First Name</label>
+                            <RadzenTextBox class="form-control" @bind-Value="contact.LastName" Disabled="true"></RadzenTextBox>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label for="">Phone</label>
+                            <RadzenTextBox class="form-control" @bind-Value="contact.Phone" Disabled="true"></RadzenTextBox>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label for="">Address</label>
+                            <RadzenTextArea class="form-control" @bind-Value="contact.Address" Disabled="true"></RadzenTextArea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <RadzenButton Text="Delete" ButtonStyle="ButtonStyle.Danger" Click="@(args => Delete())" />
+                            <RadzenButton Text="Cancel" ButtonStyle="ButtonStyle.Secondary" Click="@(args => NavigateHome())" />
+                        </div>
+                        <div class="col-md-4 mb-3">
+
+                        </div>
+                    </div>
+                </RadzenFieldset>
+            </div>
+        </div>
+    </div>
+</RadzenTemplateForm>
+}
+
+@code {
+    public Contact contact;
+
+    [Parameter]
+    public int id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        contact = await ContactService.GetContactDetails(id);
+    }
+
+    protected async Task Delete()
+    {
+        await ContactService.DeleteContact(id);
+        NavigateHome();
+    }
+
+    private void NavigateHome()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+}
